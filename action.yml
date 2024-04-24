@@ -1,0 +1,15 @@
+name: 'Create Release'
+
+description: 'Creates a GitHub release with the current version from package.json'
+
+inputs:
+  github-token:
+    description: 'GitHub token'
+    required: true
+  binary-path:
+    description: 'Path to the file to upload (optional)'
+    required: false
+
+runs:
+  using: 'node20'
+  main: 'create-release.js'
