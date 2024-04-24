@@ -1,6 +1,8 @@
 name: 'Push to Release'
-
 description: 'Creates a GitHub release with the current version from package.json'
+branding:
+  color: red
+  icon: package
 
 inputs:
   github-token:
