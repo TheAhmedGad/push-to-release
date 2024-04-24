@@ -1,5 +1,5 @@
 const core = require('@actions/core');
-const { Octokit } = require('@octokit/rest');
+const github = require('@actions/github');
 const fs = require('fs');
 
 async function run() {
@@ -9,13 +9,13 @@ async function run() {
         const version = packageJson.version;
 
         const token = process.env.GITHUB_TOKEN;
-        const octokit = new Octokit({ auth: token });
+        const octokit = github.getOctokit(token);
 
         // Check if the tag already exists
         const tagName = `v${version}`;
-        const { data: tags } = await octokit.repos.listTags({
-            owner: process.env.GITHUB_REPOSITORY.split("/")[0],
-            repo: process.env.GITHUB_REPOSITORY.split("/")[1]
+        const { data: tags } = await octokit.rest.repos.listTags({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo
         });
 
         const tagExists = tags.some(tag => tag.name === tagName);
@@ -24,27 +24,27 @@ async function run() {
             console.log(`Tag ${tagName} already exists. Skipping creation.`);
         } else {
             // Create a tag
-            const createTagResponse = await octokit.git.createTag({
-                owner: process.env.GITHUB_REPOSITORY.split("/")[0],
-                repo: process.env.GITHUB_REPOSITORY.split("/")[1],
+            const createTagResponse = await octokit.rest.git.createTag({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
                 tag: tagName,
                 message: `Release ${tagName}`,
-                object: process.env.GITHUB_SHA,
+                object: github.context.sha,
                 type: 'commit'
             });
 
             // Create a reference to the tag
-            await octokit.git.createRef({
-                owner: process.env.GITHUB_REPOSITORY.split("/")[0],
-                repo: process.env.GITHUB_REPOSITORY.split("/")[1],
+            await octokit.rest.git.createRef({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
                 ref: `refs/tags/${tagName}`,
                 sha: createTagResponse.data.sha
             });
 
             // Create a release
-            const createReleaseResponse = await octokit.repos.createRelease({
-                owner: process.env.GITHUB_REPOSITORY.split("/")[0],
-                repo: process.env.GITHUB_REPOSITORY.split("/")[1],
+            const createReleaseResponse = await octokit.rest.repos.createRelease({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
                 tag_name: tagName,
                 name: `Release ${tagName}`,
                 body: `Release ${tagName}`,
@@ -53,12 +53,12 @@ async function run() {
             });
 
             // Upload a file if provided
-            const binaryPath = process.env.BINARY_PATH;
+            const binaryPath = core.getInput('binary_path');
             if (binaryPath) {
                 const binaryData = fs.readFileSync(binaryPath);
-                await octokit.repos.uploadReleaseAsset({
-                    owner: process.env.GITHUB_REPOSITORY.split("/")[0],
-                    repo: process.env.GITHUB_REPOSITORY.split("/")[1],
+                await octokit.rest.repos.uploadReleaseAsset({
+                    owner: github.context.repo.owner,
+                    repo: github.context.repo.repo,
                     release_id: createReleaseResponse.data.id,
                     name: binaryPath,
                     data: binaryData
