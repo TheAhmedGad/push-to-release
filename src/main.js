@@ -42,30 +42,31 @@ async function run() {
             // });
 
             // Create a release
-            const createReleaseResponse = await octokit.rest.repos.createRelease({
-                owner: github.context.repo.owner,
-                repo: github.context.repo.repo,
-                tag_name: tagName,
-                name: `Release ${tagName}`,
-                body: `Release ${tagName}`,
-                draft: false,
-                prerelease: false
-            });
+            // const createReleaseResponse = await octokit.rest.repos.createRelease({
+            //     owner: github.context.repo.owner,
+            //     repo: github.context.repo.repo,
+            //     tag_name: tagName,
+            //     name: `Release ${tagName}`,
+            //     body: `Release ${tagName}`,
+            //     draft: false,
+            //     prerelease: false
+            // });
 
             // Upload a file if provided
-            const binaryPath = core.getInput('binary_path');
-            if (binaryPath) {
-                const binaryData = fs.readFileSync(binaryPath);
-                await octokit.rest.repos.uploadReleaseAsset({
-                    owner: github.context.repo.owner,
-                    repo: github.context.repo.repo,
-                    release_id: createReleaseResponse.data.id,
-                    name: binaryPath,
-                    data: binaryData
-                });
-            }
+            // const binaryPath = core.getInput('binary_path');
+            // if (binaryPath) {
+            //     const binaryData = fs.readFileSync(binaryPath);
+            //     await octokit.rest.repos.uploadReleaseAsset({
+            //         owner: github.context.repo.owner,
+            //         repo: github.context.repo.repo,
+            //         release_id: createReleaseResponse.data.id,
+            //         name: binaryPath,
+            //         data: binaryData
+            //     });
+            // }
 
-            console.log('Release created:', createReleaseResponse.data.html_url);
+            // console.log('Release created:', createReleaseResponse.data.html_url);
+            console.log('Release created');
         }
     } catch (error) {
         core.setFailed(error.message);
