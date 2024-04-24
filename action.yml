@@ -14,4 +14,4 @@ inputs:
 
 runs:
   using: 'node20'
-  main: 'create-release.js'
+  main: 'src/main.js'
