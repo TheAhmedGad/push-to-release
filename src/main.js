@@ -8,7 +8,7 @@ async function run() {
         const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
         const version = packageJson.version;
 
-        const token = core.getInput('github-token');
+        const token = core.getInput('github_token');
         const octokit = github.getOctokit(token);
 
         // Check if the tag already exists
@@ -41,19 +41,6 @@ async function run() {
                 sha: createTagResponse.data.sha
             });
 
-            // Upload a file if provided
-            const binaryPath = core.getInput('binary-path');
-            if (binaryPath) {
-                const binaryData = fs.readFileSync(binaryPath);
-                await octokit.rest.repos.uploadReleaseAsset({
-                    owner: github.context.repo.owner,
-                    repo: github.context.repo.repo,
-                    release_id: createTagResponse.data.id,
-                    name: binaryPath,
-                    data: binaryData
-                });
-            }
-
             // Create a release
             const createReleaseResponse = await octokit.rest.repos.createRelease({
                 owner: github.context.repo.owner,
@@ -64,6 +51,19 @@ async function run() {
                 draft: false,
                 prerelease: false
             });
+
+            // Upload a file if provided
+            const binaryPath = core.getInput('binary_path');
+            if (binaryPath) {
+                const binaryData = fs.readFileSync(binaryPath);
+                await octokit.rest.repos.uploadReleaseAsset({
+                    owner: github.context.repo.owner,
+                    repo: github.context.repo.repo,
+                    release_id: createReleaseResponse.data.id,
+                    name: binaryPath,
+                    data: binaryData
+                });
+            }
 
             console.log('Release created:', createReleaseResponse.data.html_url);
         }

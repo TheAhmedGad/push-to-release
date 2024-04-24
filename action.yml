@@ -5,10 +5,10 @@ branding:
   icon: package
 
 inputs:
-  github-token:
+  github_token:
     description: 'GitHub token'
     required: true
-  binary-path:
+  binary_path:
     description: 'Path to the file to upload (optional)'
     required: false
 
