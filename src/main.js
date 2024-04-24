@@ -8,7 +8,7 @@ async function run() {
         const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
         const version = packageJson.version;
 
-        const token = core.getInput('github_token');
+        const token = process.env.GITHUB_TOKEN;
         const octokit = github.getOctokit(token);
 
         // Check if the tag already exists
