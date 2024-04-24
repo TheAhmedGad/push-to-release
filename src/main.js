@@ -34,12 +34,12 @@ async function run() {
             });
 
             // Create a reference to the tag
-            await octokit.rest.git.createRef({
-                owner: github.context.repo.owner,
-                repo: github.context.repo.repo,
-                ref: `refs/tags/${tagName}`,
-                sha: createTagResponse.data.sha
-            });
+            // await octokit.rest.git.createRef({
+            //     owner: github.context.repo.owner,
+            //     repo: github.context.repo.repo,
+            //     ref: `refs/tags/${tagName}`,
+            //     sha: createTagResponse.data.sha
+            // });
 
             // Create a release
             const createReleaseResponse = await octokit.rest.repos.createRelease({
